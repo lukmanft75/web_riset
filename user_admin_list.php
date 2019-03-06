@@ -18,7 +18,6 @@
 				$txt_name		= $f->input("txt_name",@$_GET["txt_name"]);
 				$txt_email		= $f->input("txt_email",@$_GET["txt_email"]);
 				$txt_job_title	= $f->input("txt_job_title",@$_GET["txt_job_title"]);
-				$group			= $f->select("group",$db->fetch_select_data("groups","id","name",["id" => "1,2,3:IN"],array(),"",true),@$_GET["group"],"style='height:25px; width:100%'");
 			?>
 			<?=$t->row(array("Name",$txt_name));?>
 			<?=$t->row(array("Email",$txt_email));?>
@@ -36,10 +35,17 @@
 	$whereclause = "";
 	$whereclause = "forbidden_dashboards = '1' AND ";
 	if($_SESSION["group_id"] > 0)	$whereclause .= "hidden = '0' AND ";
-	if(@$_GET["group"]!="")			$whereclause .= "group_id = '".$_GET["group"]."' AND ";
 	if(@$_GET["txt_email"]!="")		$whereclause .= "email LIKE '"."%".str_replace(" ","%",$_GET["txt_email"])."%"."' AND ";
 	if(@$_GET["txt_name"]!="")		$whereclause .= "name LIKE '"."%".str_replace(" ","%",$_GET["txt_name"])."%"."' AND ";
-	if(@$_GET["txt_job_title"]!="")	$whereclause .= "job_title LIKE '"."%".str_replace(" ","%",$_GET["txt_job_title"])."%"."' AND ";
+	if(@$_GET["txt_job_title"]!="")	{
+		$job_title_ids	= $db->fetch_all_data("job_title",["id"],"name LIKE '%".@$_GET["txt_job_title"]."%'");
+		$job_like = "";
+		foreach($job_title_ids as $job_title_id){
+			$job_like .= "job_title_ids LIKE '%|".$job_title_id["id"]."|%' OR ";
+		}
+		$job_like = "(".substr($job_like,0,-4).") AND ";
+		$whereclause .= $job_like;
+	}
 	
 	$db->addtable("users");
 	if($whereclause != "") $db->awhere(substr($whereclause,0,-4));$db->limit($_max_counting);

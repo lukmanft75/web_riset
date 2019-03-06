@@ -1,14 +1,12 @@
 <?php
 
 function login_action($username,$password){
-	// echo "trial<br>";
-	// echo $username."<br>";
-	// echo $password."<br>";
-
 	global $_SERVER,$_SESSION,$db,$_POST,$v;
 	$db->addtable("users");
 	$db->addfield("id");
+	$db->addfield("name");
 	$db->addfield("password");
+	$db->addfield("hidden");
 	$db->addfield("sign_in_count");
 	$db->addfield("current_sign_in_at");
 	$db->addfield("last_sign_in_at");
@@ -17,13 +15,8 @@ function login_action($username,$password){
 	$db->where("email",$username);
 	$db->limit(1);
 	$users = $db->fetch_data();
-	
-	// echo $db->get_last_query()."<br>";
-	// echo count($users)." xxx<br>";
-
 	if(count($users) > 0){
-		// echo "pxs";
-		if($users["password"] == base64_encode($password)){
+		if($users["password"] == base64_encode($password) && $users["hidden"] == "0"){
 			$_SESSION["errormessage"] = "";
 			$_SESSION["username"] = $username;
 			$_SESSION["fullname"] = $db->fetch_single_data("users","name",array("id" => $users["id"]));
@@ -40,7 +33,6 @@ function login_action($username,$password){
 			$db->addfield("last_sign_in_ip");$db->addvalue($users["current_sign_in_ip"]);
 			$db->update(); 
 			
-			
 			$db->addtable("log_histories"); 
 			$db->addfield("user_id");$db->addvalue($users["id"]);
 			$db->addfield("email");$db->addvalue($username);
@@ -55,7 +47,7 @@ function login_action($username,$password){
 			return 0;
 		}
 	} else {
-		$_SESSION["errormessage"] = "Wrong Username/Password";
+		$_SESSION["errormessage"] = "Wrong Username";
 		return 0;
 	}
 	return 0;
@@ -77,11 +69,11 @@ if(isset($_GET["logout_action"])){
 	
 	?> <script language="javascript"> window.location='index.php'; </script><?php
 }
+
 if(isset($_POST["login_action"])){
-	// echo "xxx<br>";
-	// echo $_POST["username"]."<br>";
-	// echo $_POST["password"]."<br>";
-	login_action($_POST["username"],$_POST["password"]);
-	?> <script language="javascript"> window.location='<?=basename($_SERVER["PHP_SELF"]);?>'; </script> <?php
+	login_action($_POST["username"],$_POST["password"],$_POST["forget"]);
+	if($_SESSION["isloggedin"]){
+		?> <script language="javascript"> window.location='<?=basename($_SERVER["PHP_SELF"]);?>'; </script> <?php
+	}
 }
 ?>
