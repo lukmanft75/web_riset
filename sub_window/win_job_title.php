@@ -1,9 +1,6 @@
 <?php
 	include_once "win_head.php";
-	// $_title = "Teams List";
 	$_tablename = "job_title";
-	// $_id_field = "id";
-	// $_caption_field = "name";
 	
 	if($_GET["remove"]){
 		$_SESSION["job_title"] = array_diff($_SESSION["job_title"],array($_GET["remove"]));

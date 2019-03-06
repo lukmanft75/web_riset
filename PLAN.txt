@@ -1,0 +1,59 @@
+HOME
+	>USERS [Administrator]
+	>PESERTA DIDIK
+		>>memuat:
+			NIS
+			NISN
+			Nama
+			TTL
+			Nama Ayah
+			Nama Ibu
+			Nomor Telp / HP
+			Alamat Tinggal
+			==============
+			Diterima Pada
+			Kelas
+			Semester
+			Sekolah Sebelumnya
+			Status [Baru / Pindahan]
+			==============
+			History
+				Awal Penerimaan, kenaikan kelas dan kelasnya A/B/C
+INFORMASI
+	>STRUKTUR ORGANISASI
+		>>memuat:
+			Susunan kepegewaian
+	>KALENDER PENDIDIKAN
+		>>memuat:
+			informasi KBM
+	>JADWAL PELAJARAN
+		>>memuat:
+			jadwal pelajaran dan jadwal guru
+GENERAL
+	>PROFILE // Self service
+		>>memuat:
+			data diri user login as:
+				NIP
+				Nama
+				Alamat Email
+				TTL
+				Nama Ayah
+				Nama Ibu
+				Nomor Telp / HP
+				Alamat Tinggal
+				================
+				Diterima Pada
+				================
+				Berkas-Berkas
+					FC KTP
+					FC KK
+					FC Ijazah
+					Foto
+					Dll
+				================
+				History
+					Awal Peneriamaan, mutasi jabatan
+	>GANTI PASSWORD
+	
+	
+	

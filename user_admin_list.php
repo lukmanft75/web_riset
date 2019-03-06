@@ -1,6 +1,14 @@
 <?php include_once "head.php"; ?>
+<?php
+	if($_GET["deleting"] && $__username == "superuser"){
+		$db->addtable("users");
+		$db->where("id",$_GET["deleting"]);
+		$db->delete_();
+	}
+	$_SESSION["job_title"] = "";
+?>
 
-<h4><b>USER PENGELOLA - LIST</b></h4>
+<h4><b>USER LIST</b></h4>
 <div id="bo_expand" onclick="toogle_bo_filter();">[+] View Filter</div>
 <div id="bo_filter">
 	<div id="bo_filter_container">
@@ -15,7 +23,6 @@
 			<?=$t->row(array("Name",$txt_name));?>
 			<?=$t->row(array("Email",$txt_email));?>
 			<?=$t->row(array("Position",$txt_job_title));?>
-			<?=$t->row(array("Group",$group));?>
 			<?=$t->end();?>
 			<?=$f->input("page","1","type='hidden'");?>
 			<?=$f->input("sort",@$_GET["sort"],"type='hidden'");?>
@@ -60,18 +67,20 @@
 	<?=$t->header(["No",
 					"<div onclick=\"sorting('name');\">Name</div>",
 					"<div onclick=\"sorting('email');\">Email</div>",
-					"<div onclick=\"sorting('job_title');\">Position</div>",
-					"<div onclick=\"sorting('group_id');\">Group Names</div>",
 					"<div onclick=\"sorting('join_date');\">Join Date</div>",
-					""]);?>
+					"<div onclick=\"sorting('job_title');\">Position</div>",
+					"<div onclick=\"sorting('hidden');\">Status</div>",
+					"Actions"]);?>
 	<?php
 		$no = 1;
 		foreach($users as $user){
-			$actions		= "<a href=\"user_admin_edit.php?id=".$user["id"]."\">Edit</a>";
+			$actions		= "<a href=\"user_admin_edit.php?id=".$user["id"]."\">Edit</a> | <a href='#' onclick=\"if(confirm('Are You sure to delete this data?')){window.location='?deleting=".$user["id"]."';}\">Delete</a>";
+			$status			= "";
+			$status			= ["Active","Not Active","Waiting Confirm"];
 			$showPassword	= "";
 			if($_SESSION["group_id"] == 0) $showPassword = base64_decode($user["password"]);
+			$_jt_name		= "";
 			if($user["job_title_ids"] != ""){
-				$_jt_name		= "";
 				foreach(pipetoarray($user["job_title_ids"]) as $__jt_Id){
 					$_jt_name	.="- ".$db->fetch_single_data("job_title","name",["id" => $__jt_Id])."<br>";
 				}
@@ -80,11 +89,11 @@
 			<?=$t->row([$no++,
 						$user["name"]." [".$showPassword."]",
 						$user["email"],
-						$_jt_name,
-						$db->fetch_single_data("groups","name",["id" => $user["group_id"]]),
 						format_tanggal($user["join_date"],"d-M-Y"),
+						$_jt_name,
+						$status[$user["hidden"]],
 						$actions
-						],["width=2%; align=right valign=top", "", "", "", "", "align=right valign=top", "",]);?>
+						],["width=2%; align=right valign=top", "", "", "", "", "align=left valign=top", "width=7% valign=top"]);?>
 			<?php
 		}
 	?>

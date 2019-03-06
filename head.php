@@ -31,6 +31,7 @@
 			<link rel="stylesheet" type="text/css" href="styles/animate.css">
 			<link rel="stylesheet" type="text/css" href="styles/toastr.min.css">
 			<link rel="stylesheet" type="text/css" href="styles/font-awesome.min.css">
+			
 			<script>
 				var global_respon = new Array();
 				var toastroptions = {

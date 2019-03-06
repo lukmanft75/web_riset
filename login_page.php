@@ -1,10 +1,23 @@
 <?php include_once "head.php";?>
+<?php
+	if(@$_GET["token"]){
+		$new_pass = substr($_GET["token"],-6);
+		$confirm_id = $db->fetch_single_data("users", "id", ["password" => base64_encode($new_pass), "token" => $_GET["token"], "hidden" => "2"]);
+		
+		$db->addtable("users");					$db->where("id",$confirm_id);
+		$db->addfield("hidden");				$db->addvalue("0");
+		$inserting = $db->update();
+		
+		$email = $db->fetch_single_data("users","email",["id" => $confirm_id]);
+	} 
+?>
+
 
 <table width="100%"><tr><td align="center">
 <fieldset style="width:300px;height:180px;padding-top:20px" class="frontRegisterArea">
 <div class="bo_title">Login</div>
 <?php
-	$txt_username = $f->input("username");
+	$txt_username = $f->input("username",$email);
 	$txt_password = $f->input("password","","type='password'");
 ?>
 <?=$f->start();?>

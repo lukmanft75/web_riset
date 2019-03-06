@@ -36,15 +36,22 @@
 	$h = new Helper();
 	if($_SERVER["REMOTE_ADDR"] == "::1") $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
 
-	$__group_id 				= $db->fetch_single_data("users","group_id",array("id" => $__user_id));
-	$__is_allowed				= is_file_allowed($__phpself,$__user_id,$__group_id,$db);
+	$job_title_ids 				= $db->fetch_single_data("users","job_title_ids",array("id" => $__user_id));
+	$jt_id						= "";
+
+	foreach(pipetoarray($job_title_ids) as $job_title_id){
+		$jt_id	.=$job_title_id.", ";
+	} 
+	$jt_id = substr($jt_id, 0, -2);
+	
+	$__is_allowed				= is_file_allowed($__phpself,$__user_id,$jt_id,$db);
 	if(!$__is_allowed){
-		$__is_allowed			= is_file_allowed($__http_referer,$__user_id,$__group_id,$db);
+		$__is_allowed			= is_file_allowed($__http_referer,$__user_id,$jt_id,$db);
 	}
-	if($__group_id > 0){
+	if($__user_id > 1){
 		$db->addtable("backoffice_menu_privileges");
 		$db->addfield("backoffice_menu_id");
-		$db->where("group_id",$__group_id);
+		$db->awhere("group_id IN (".$jt_id.")");
 	} else if($__user_id == 1) {		
 		$db->addtable("backoffice_menu");
 		$db->addfield("id");
@@ -68,7 +75,7 @@
 		$file_pattern = str_replace(array("_extension","_extension_edit"),"",$file_pattern);
 		
 		$selected_menu_id = $db->fetch_single_data("backoffice_menu","id",array("url" => $file_pattern.":LIKE"));
-		if($user_id != 1 && $db->fetch_single_data("backoffice_menu_privileges","privilege",array("group_id" => $group_id,"backoffice_menu_id" => $selected_menu_id)) == 0) {
+		if($user_id != 1 && $db->fetch_single_data("backoffice_menu_privileges","privilege",array("group_id" => $group_id.":IN","backoffice_menu_id" => $selected_menu_id)) == 0) {
 			$is_allowed = false;
 		}
 		return $is_allowed;
